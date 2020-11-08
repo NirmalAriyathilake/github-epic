@@ -72,7 +72,7 @@ async function updateEpic({ octokit, epic }) {
     repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
     issue_number: epicNumber,
     body: epicBody,
-    state: allIssuesClosed && autoCloseEpic ? 'close' : 'open',
+    state: allIssuesClosed && autoCloseEpic ? 'closed' : 'open',
   });
 
   return result;
