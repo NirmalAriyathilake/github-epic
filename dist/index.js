@@ -53,12 +53,18 @@ async function updateEpic({ octokit, epic }) {
     // all issues
     const allPattern = new RegExp(`- \\[[ |x]\\] .*#\d.*`, 'gm');
     const allIssues = epicBody.matchAll(allPattern);
+
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("No of issues in epic: " + allIssues.length);
     
     // closed issues
     const closedPattern = new RegExp(`- \\[[x]\\] .*#\d.*`, 'gm');
     const closedIssues = epicBody.matchAll(closedPattern);
 
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("No of closed issues in epic: " + closedIssues.length);
+
     allIssuesClosed = allIssues.length == closedIssues.length;
+
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("All issues closed : " + allIssuesClosed);
   }
 
   const result = await octokit.issues.update({
@@ -66,7 +72,7 @@ async function updateEpic({ octokit, epic }) {
     repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
     issue_number: epicNumber,
     body: epicBody,
-    state: allIssuesClosed & autoCloseEpic ? 'close' : 'open',
+    state: allIssuesClosed && autoCloseEpic ? 'close' : 'open',
   });
 
   return result;
