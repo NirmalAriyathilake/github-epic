@@ -49,7 +49,7 @@ async function updateEpic({ octokit, epic }) {
     epicBody = epicBody.replace(match[0], match[0].replace(/- \[[ |x]\]/, `- [${convertedIssueState}]`));
   }
 
-  if(isAutoCloseEpic){
+  if (autoCloseEpic){
     // all issues
     const allPattern = new RegExp(`- \\[[ |x]\\] .*#\d.*`, 'gm');
     const allIssues = epicBody.matchAll(apattern);
