@@ -56,17 +56,17 @@ async function updateEpic({ octokit, epic }) {
     const allPattern = new RegExp(`- \\[[ |x]\\] .*#\d.*`, 'gm');
     const allIssues = epicBody.matchAll(allPattern);
 
-    console.log("No of issues in epic: " + allIssues.length);
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("No of issues in epic: " + allIssues.length);
     
     // closed issues
     const closedPattern = new RegExp(`- \\[[x]\\] .*#\d.*`, 'gm');
     const closedIssues = epicBody.matchAll(closedPattern);
 
-    console.log("No of closed issues in epic: " + closedIssues.length);
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("No of closed issues in epic: " + closedIssues.length);
 
     allIssuesClosed = allIssues.length === closedIssues.length;
 
-    console.log("All issues closed : " + allIssuesClosed);
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("All issues closed : " + allIssuesClosed);
   }
 
   const result = await octokit.issues.update({
