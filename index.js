@@ -39,7 +39,7 @@ async function updateEpic({ octokit, epic }) {
   if (autoCloseEpic){
     // all issues
     const allPattern = new RegExp(`- \\[[ |x]\\] .*#\d.*`, 'gm');
-    const allIssues = epicBody.matchAll(apattern);
+    const allIssues = epicBody.matchAll(allPattern);
     
     // closed issues
     const closedPattern = new RegExp(`- \\[[x]\\] .*#\d.*`, 'gm');
