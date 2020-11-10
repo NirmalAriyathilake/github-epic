@@ -8,8 +8,12 @@ inputs:
     description: Label name for epic issues
     required: true
     default: epic
-  auto-close-epic:
-    description: If true when all issues are closed in epic, epic will be closed
+  close-epic:
+    description: When all issues are closed in epic, epic will be closed
+    required: true
+    default: false
+  remove-deleted-issue:
+    description: When mentioned issue is deleted its removed from issue list
     required: true
     default: false
 runs:

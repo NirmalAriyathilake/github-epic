@@ -23,8 +23,13 @@ async function getReferencedEpics({ octokit }) {
 }
 
 async function updateEpic({ octokit, epic }) {
-  const autoCloseEpic = core.getInput('auto-close-epic', { required: true });
+  const autoCloseEpic = core.getInput('close-epic', { required: true });
+  const autoRemoveDeletedIssue = core.getInput('remove-deleted-issue', { required: true });
   let allIssuesClosed = false;
+
+  const selectedIssue = github.context.payload.issue;
+
+  console.log("Selected issue :" + selectedIssue);
 
   const issueNumber = github.context.payload.issue.number;
   const issueState = github.context.payload.issue.state;
@@ -47,17 +52,17 @@ async function updateEpic({ octokit, epic }) {
     const allPattern = new RegExp(`- \\[[ |x]\\] .*#[0-9]+.*`, 'gm');
     const allIssueCount = count(epicBody, allPattern);
 
-    core.setOutput("No of issues in epic: " + allIssueCount);
+    console.log("No of issues in epic: " + allIssueCount);
     
     // closed issues
     const closedPattern = new RegExp(`- \\[[x]\\] .*#[0-9]+.*`, 'gm');
     const closedIssueCount = count(epicBody, closedPattern);
 
-    core.setOutput("No of closed issues in epic: " + closedIssueCount);
+    console.log("No of closed issues in epic: " + closedIssueCount);
 
     allIssuesClosed = allIssueCount === closedIssueCount;
 
-    core.setOutput("All issues closed : " + allIssuesClosed);
+    console.log("All issues closed : " + allIssuesClosed);
   }
 
   const result = await octokit.issues.update({
