@@ -14,6 +14,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const count = (str, pattern) => {
+  return ((str || '').match(pattern) || []).length;
+}
+
 async function getReferencedEpics({ octokit }) {
   const epicLabelName = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('epic-label-name', { required: true });
 
@@ -53,18 +57,18 @@ async function updateEpic({ octokit, epic }) {
 
   if (autoCloseEpic){
     // all issues
-    const allPattern = new RegExp(`- \\[[ |x]\\] .*#\d.*`, 'gm');
-    const allIssues = epicBody.matchAll(allPattern);
+    const allPattern = new RegExp(`- \\[[ |x]\\] .*#[0-9]+.*`, 'gm');
+    const allIssueCount = count(epicBody, allPattern);
 
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("No of issues in epic: " + allIssues.length);
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("No of issues in epic: " + allIssueCount);
     
     // closed issues
-    const closedPattern = new RegExp(`- \\[[x]\\] .*#\d.*`, 'gm');
-    const closedIssues = epicBody.matchAll(closedPattern);
+    const closedPattern = new RegExp(`- \\[[x]\\] .*#[0-9]+.*`, 'gm');
+    const closedIssueCount = count(epicBody, closedPattern);
 
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("No of closed issues in epic: " + closedIssues.length);
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("No of closed issues in epic: " + closedIssueCount);
 
-    allIssuesClosed = allIssues.length === closedIssues.length;
+    allIssuesClosed = allIssueCount === closedIssueCount;
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("All issues closed : " + allIssuesClosed);
   }

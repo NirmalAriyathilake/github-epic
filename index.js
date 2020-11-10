@@ -1,6 +1,10 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
+const count = (str, pattern) => {
+  return ((str || '').match(pattern) || []).length;
+}
+
 async function getReferencedEpics({ octokit }) {
   const epicLabelName = core.getInput('epic-label-name', { required: true });
 
@@ -40,18 +44,18 @@ async function updateEpic({ octokit, epic }) {
 
   if (autoCloseEpic){
     // all issues
-    const allPattern = new RegExp(`- \\[[ |x]\\] .*#\d.*`, 'gm');
-    const allIssues = epicBody.matchAll(allPattern);
+    const allPattern = new RegExp(`- \\[[ |x]\\] .*#[0-9]+.*`, 'gm');
+    const allIssueCount = count(epicBody, allPattern);
 
-    core.setOutput("No of issues in epic: " + allIssues.length);
+    core.setOutput("No of issues in epic: " + allIssueCount);
     
     // closed issues
-    const closedPattern = new RegExp(`- \\[[x]\\] .*#\d.*`, 'gm');
-    const closedIssues = epicBody.matchAll(closedPattern);
+    const closedPattern = new RegExp(`- \\[[x]\\] .*#[0-9]+.*`, 'gm');
+    const closedIssueCount = count(epicBody, closedPattern);
 
-    core.setOutput("No of closed issues in epic: " + closedIssues.length);
+    core.setOutput("No of closed issues in epic: " + closedIssueCount);
 
-    allIssuesClosed = allIssues.length === closedIssues.length;
+    allIssuesClosed = allIssueCount === closedIssueCount;
 
     core.setOutput("All issues closed : " + allIssuesClosed);
   }
