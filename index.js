@@ -29,6 +29,13 @@ async function updateEpic({ octokit, epic }) {
   const autoRemoveDeletedIssue = core.getInput('remove-deleted-issue', { required: true });
   let allIssuesClosed = false;
 
+  // Get epic details
+  const epicNumber = epic.source.issue.number;
+  let epicBody = epic.source.issue.body;
+
+  console.log("Selected Epic Number:" + epicNumber);
+
+  // Get Issue details
   const selectedIssue = github.context.payload.issue;
 
   console.log("Selected issue :" + selectedIssue);
@@ -37,8 +44,6 @@ async function updateEpic({ octokit, epic }) {
     const issueNumber = selectedIssue.number;
     const issueState = selectedIssue.state;
     const convertedIssueState = issueState === 'closed' ? 'x' : ' ';
-    const epicNumber = epic.source.issue.number;
-    let epicBody = epic.source.issue.body;
 
     const pattern = new RegExp(`- \\[[ |x]\\] .*#${issueNumber}.*`, 'gm');
     const matches = epicBody.matchAll(pattern);
