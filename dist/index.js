@@ -19,6 +19,7 @@ const count = (str, pattern) => {
 }
 
 async function getReferencedEpics({ octokit }) {
+  console.log("Getting Referenced Epics");
   const epicLabelName = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('epic-label-name', { required: true });
 
   const events = await octokit.issues.listEventsForTimeline({
@@ -36,6 +37,7 @@ async function getReferencedEpics({ octokit }) {
 }
 
 async function updateEpic({ octokit, epic }) {
+  console.log("Updating Epic");
   const autoCloseEpic = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('close-epic', { required: true });
   const autoRemoveDeletedIssue = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('remove-deleted-issue', { required: true });
   let allIssuesClosed = false;
@@ -44,38 +46,42 @@ async function updateEpic({ octokit, epic }) {
 
   console.log("Selected issue :" + selectedIssue);
 
-  const issueNumber = _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.number;
-  const issueState = _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.state;
-  const convertedIssueState = issueState === 'closed' ? 'x' : ' ';
-  const epicNumber = epic.source.issue.number;
-  let epicBody = epic.source.issue.body;
+  if(selectedIssue != null){
+    const issueNumber = selectedIssue.number;
+    const issueState = selectedIssue.state;
+    const convertedIssueState = issueState === 'closed' ? 'x' : ' ';
+    const epicNumber = epic.source.issue.number;
+    let epicBody = epic.source.issue.body;
 
-  const pattern = new RegExp(`- \\[[ |x]\\] .*#${issueNumber}.*`, 'gm');
-  const matches = epicBody.matchAll(pattern);
+    const pattern = new RegExp(`- \\[[ |x]\\] .*#${issueNumber}.*`, 'gm');
+    const matches = epicBody.matchAll(pattern);
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const match of matches) {
-    epicBody = epicBody.replace(match[0], match[0].replace(/- \[[ |x]\]/, `- [${convertedIssueState}]`));
-  }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const match of matches) {
+      epicBody = epicBody.replace(match[0], match[0].replace(/- \[[ |x]\]/, `- [${convertedIssueState}]`));
+    }
 
-  console.log("Issue updated");
+    console.log("Issue updated");
 
-  if (autoCloseEpic){
-    // all issues
-    const allPattern = new RegExp(`- \\[[ |x]\\] .*#[0-9]+.*`, 'gm');
-    const allIssueCount = count(epicBody, allPattern);
+    if (autoCloseEpic) {
+      // all issues
+      const allPattern = new RegExp(`- \\[[ |x]\\] .*#[0-9]+.*`, 'gm');
+      const allIssueCount = count(epicBody, allPattern);
 
-    console.log("No of issues in epic: " + allIssueCount);
-    
-    // closed issues
-    const closedPattern = new RegExp(`- \\[[x]\\] .*#[0-9]+.*`, 'gm');
-    const closedIssueCount = count(epicBody, closedPattern);
+      console.log("No of issues in epic: " + allIssueCount);
 
-    console.log("No of closed issues in epic: " + closedIssueCount);
+      // closed issues
+      const closedPattern = new RegExp(`- \\[[x]\\] .*#[0-9]+.*`, 'gm');
+      const closedIssueCount = count(epicBody, closedPattern);
 
-    allIssuesClosed = allIssueCount === closedIssueCount;
+      console.log("No of closed issues in epic: " + closedIssueCount);
 
-    console.log("All issues closed : " + allIssuesClosed);
+      allIssuesClosed = allIssueCount === closedIssueCount;
+
+      console.log("All issues closed : " + allIssuesClosed);
+    }
+  }else{
+    console.log("Issue not found");
   }
 
   const result = await octokit.issues.update({
@@ -90,6 +96,7 @@ async function updateEpic({ octokit, epic }) {
 }
 
 async function updateEpics({ octokit, epics }) {
+  console.log("Updating Individual Epic");
   return Promise.all(epics.map((epic) => updateEpic({ octokit, epic })));
 }
 
