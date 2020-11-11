@@ -5,6 +5,23 @@ const count = (str, pattern) => {
   return ((str || '').match(pattern) || []).length;
 }
 
+const getCurrentIssue = () => {
+  const selectedIssue = github.context.payload.issue;
+
+  console.log("Current Issue :" + selectedIssue);
+
+  if(selectedIssue != null){
+    console.log("Current Issue no : " + github.context.payload.issue);
+    return selectedIssue;
+  }else{
+    console.log("Current Issue no Null : " + github.context.payload.issue);
+    const autoRemoveDeletedIssue = core.getInput('remove-deleted-issue', { required: true });
+    if (autoRemoveDeletedIssue){
+      console.log("Deleting current issue");
+    }
+  }
+}
+
 async function getReferencedEpics({ octokit }) {
   console.log("Getting Referenced Epics");
   const epicLabelName = core.getInput('epic-label-name', { required: true });
@@ -26,7 +43,6 @@ async function getReferencedEpics({ octokit }) {
 async function updateEpic({ octokit, epic }) {
   console.log("Updating Epic");
   const autoCloseEpic = core.getInput('close-epic', { required: true });
-  const autoRemoveDeletedIssue = core.getInput('remove-deleted-issue', { required: true });
   let allIssuesClosed = false;
 
   // Get epic details
@@ -42,6 +58,9 @@ async function updateEpic({ octokit, epic }) {
 
   if(selectedIssue != null){
     const issueNumber = selectedIssue.number;
+
+    console.log("Selected Issue Number:" + issueNumber);
+
     const issueState = selectedIssue.state;
     const convertedIssueState = issueState === 'closed' ? 'x' : ' ';
 
@@ -99,6 +118,8 @@ async function run() {
     const octokit = new github.GitHub(token, {
       previews: ['mockingbird-preview'],
     });
+
+    getCurrentIssue();
 
     const epics = await getReferencedEpics({ octokit });
     await updateEpics({ octokit, epics });
