@@ -24,10 +24,10 @@ const getCurrentIssue = () => {
   console.log("Current Issue :" + selectedIssue);
 
   if(selectedIssue != null){
-    console.log("Current Issue no : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue);
+    console.log("Current Issue no : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.number);
     return selectedIssue;
   }else{
-    console.log("Current Issue no Null : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue);
+    console.log("Current Issue no Null : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.number);
     const autoRemoveDeletedIssue = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('remove-deleted-issue', { required: true });
     if (autoRemoveDeletedIssue){
       console.log("Deleting current issue");

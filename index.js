@@ -11,10 +11,10 @@ const getCurrentIssue = () => {
   console.log("Current Issue :" + selectedIssue);
 
   if(selectedIssue != null){
-    console.log("Current Issue no : " + github.context.payload.issue);
+    console.log("Current Issue no : " + github.context.payload.issue.number);
     return selectedIssue;
   }else{
-    console.log("Current Issue no Null : " + github.context.payload.issue);
+    console.log("Current Issue no Null : " + github.context.payload.issue.number);
     const autoRemoveDeletedIssue = core.getInput('remove-deleted-issue', { required: true });
     if (autoRemoveDeletedIssue){
       console.log("Deleting current issue");
