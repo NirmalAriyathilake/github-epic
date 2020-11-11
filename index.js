@@ -12,6 +12,8 @@ const getCurrentIssue = () => {
 
   if(selectedIssue != null){
     console.log("Current Issue no : " + github.context.payload.issue.number);
+    console.log("Current Issue href : " + github.context.payload.issue.html_url);
+    console.log("Current Issue href : " + github.context.payload.issue.body);
     return selectedIssue;
   }else{
     console.log("Current Issue no Null : " + github.context.payload.issue.number);
@@ -31,6 +33,8 @@ async function getReferencedEpics({ octokit }) {
     repo: github.context.repo.repo,
     issue_number: github.context.payload.issue.number,
   });
+
+  console.log("Getting Referenced Epics Event");
 
   const referencedEpics = events.data
     .filter((item) => (item.event === 'cross-referenced' && item.source))
