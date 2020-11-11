@@ -18,28 +18,10 @@ const count = (str, pattern) => {
   return ((str || '').match(pattern) || []).length;
 }
 
-const getCurrentIssue = () => {
-  const selectedIssue = _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue;
-
-  console.log("Current Issue :" + selectedIssue);
-
-  if(selectedIssue != null){
-    console.log("Current Issue no : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.number);
-    console.log("Current Issue href : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.html_url);
-    console.log("Current Issue href : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.body);
-    return selectedIssue;
-  }else{
-    console.log("Current Issue no Null : " + _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.number);
-    const autoRemoveDeletedIssue = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('remove-deleted-issue', { required: true });
-    if (autoRemoveDeletedIssue){
-      console.log("Deleting current issue");
-    }
-  }
-}
-
 async function getReferencedEpics({ octokit }) {
-  console.log("Getting Referenced Epics");
   const epicLabelName = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('epic-label-name', { required: true });
+
+  console.log("Getting Referenced Epic's Event");
 
   const events = await octokit.issues.listEventsForTimeline({
     owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
@@ -47,7 +29,7 @@ async function getReferencedEpics({ octokit }) {
     issue_number: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload.issue.number,
   });
 
-  console.log("Getting Referenced Epics Event");
+  console.log("Getting Referenced Epics");
 
   const referencedEpics = events.data
     .filter((item) => (item.event === 'cross-referenced' && item.source))
@@ -73,7 +55,7 @@ async function updateEpic({ octokit, epic }) {
 
   console.log("Selected issue :" + selectedIssue);
 
-  if(selectedIssue != null){
+  if (selectedIssue != null) {
     const issueNumber = selectedIssue.number;
 
     console.log("Selected Issue Number:" + issueNumber);
@@ -106,9 +88,9 @@ async function updateEpic({ octokit, epic }) {
 
       allIssuesClosed = allIssueCount === closedIssueCount;
 
-      console.log("All issues closed : " + allIssuesClosed);
+      console.log(allIssuesClosed && autoCloseEpic ? "Issue will be closed" : "Issue will stay open");
     }
-  }else{
+  } else {
     console.log("Issue not found");
   }
 
@@ -135,8 +117,6 @@ async function run() {
     const octokit = new _actions_github__WEBPACK_IMPORTED_MODULE_1__.GitHub(token, {
       previews: ['mockingbird-preview'],
     });
-
-    getCurrentIssue();
 
     const epics = await getReferencedEpics({ octokit });
     await updateEpics({ octokit, epics });

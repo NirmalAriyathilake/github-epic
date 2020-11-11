@@ -5,28 +5,10 @@ const count = (str, pattern) => {
   return ((str || '').match(pattern) || []).length;
 }
 
-const getCurrentIssue = () => {
-  const selectedIssue = github.context.payload.issue;
-
-  console.log("Current Issue :" + selectedIssue);
-
-  if(selectedIssue != null){
-    console.log("Current Issue no : " + github.context.payload.issue.number);
-    console.log("Current Issue href : " + github.context.payload.issue.html_url);
-    console.log("Current Issue href : " + github.context.payload.issue.body);
-    return selectedIssue;
-  }else{
-    console.log("Current Issue no Null : " + github.context.payload.issue.number);
-    const autoRemoveDeletedIssue = core.getInput('remove-deleted-issue', { required: true });
-    if (autoRemoveDeletedIssue){
-      console.log("Deleting current issue");
-    }
-  }
-}
-
 async function getReferencedEpics({ octokit }) {
-  console.log("Getting Referenced Epics");
   const epicLabelName = core.getInput('epic-label-name', { required: true });
+
+  console.log("Getting Referenced Epic's Event");
 
   const events = await octokit.issues.listEventsForTimeline({
     owner: github.context.repo.owner,
@@ -34,7 +16,7 @@ async function getReferencedEpics({ octokit }) {
     issue_number: github.context.payload.issue.number,
   });
 
-  console.log("Getting Referenced Epics Event");
+  console.log("Getting Referenced Epics");
 
   const referencedEpics = events.data
     .filter((item) => (item.event === 'cross-referenced' && item.source))
@@ -60,7 +42,7 @@ async function updateEpic({ octokit, epic }) {
 
   console.log("Selected issue :" + selectedIssue);
 
-  if(selectedIssue != null){
+  if (selectedIssue != null) {
     const issueNumber = selectedIssue.number;
 
     console.log("Selected Issue Number:" + issueNumber);
@@ -93,9 +75,9 @@ async function updateEpic({ octokit, epic }) {
 
       allIssuesClosed = allIssueCount === closedIssueCount;
 
-      console.log("All issues closed : " + allIssuesClosed);
+      console.log(allIssuesClosed && autoCloseEpic ? "Issue will be closed" : "Issue will stay open");
     }
-  }else{
+  } else {
     console.log("Issue not found");
   }
 
@@ -122,8 +104,6 @@ async function run() {
     const octokit = new github.GitHub(token, {
       previews: ['mockingbird-preview'],
     });
-
-    getCurrentIssue();
 
     const epics = await getReferencedEpics({ octokit });
     await updateEpics({ octokit, epics });
